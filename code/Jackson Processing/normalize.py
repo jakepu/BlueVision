@@ -1,5 +1,6 @@
 
 import scipy.integrate
+import numpy as np
 
 lins = []
 with open('./data.csv','r') as the_in:
@@ -10,6 +11,8 @@ for line in lins:
     if line != '':
         sensor_read_line = line.strip('\n').strip(',').split(',')
         sensor_readings += [sensor_read_line]
+
+print(sensor_readings)
 
 time_nums = []
 acc_x_list = []
@@ -26,6 +29,21 @@ for p in range(len(sensor_readings)):
     acc_y_list.append(numy)
     acc_z_list.append(numz)
 
+acc_x_list = np.array(acc_x_list)
+acc_y_list = np.array(acc_y_list)
+acc_z_list = np.array(acc_z_list)
+
+
+# calibrate
+avg_x = np.sum(acc_x_list[:10]) / 10
+avg_y = np.sum(acc_y_list[:10]) / 10
+avg_z = np.sum(acc_z_list[:10]) / 10
+
+acc_x_list -= avg_x
+acc_y_list -= avg_y
+acc_z_list -= avg_z
+
+# integrate
 
 vel_x_list = scipy.integrate.cumulative_trapezoid(y=acc_x_list, x=time_nums)
 dist_x_list = scipy.integrate.cumulative_trapezoid(y=vel_x_list,x=time_nums[:-1])

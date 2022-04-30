@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 
+
 '''
 Given some coordinates and RSSI of device packets at those coordinates, 
 we use interpolation to predict the location of a device. 
@@ -16,14 +17,14 @@ def localize_device(xs, ys, rssis):
     # TODO: change these
     minX = 0
     minY = 0
-    maxX = 100
-    maxY = 20
+    maxX = 150
+    maxY = 25
 
     xsteps = np.arange(minX, maxX, 0.1) # lets put as decimeters
     ysteps = np.arange(minY, maxY, 0.1)  # pretty sure this should be y
 
     xgrid, ygrid = np.meshgrid(xsteps, ysteps, indexing='xy')
-    zgrid = griddata((xs, ys), rssis, (xgrid, ygrid))
+    zgrid = griddata((xs, ys), rssis, (xgrid, ygrid), method='cubic')
 
     # clean out nan data
     if ~np.count_nonzero(zgrid[~np.isnan(zgrid)]):
@@ -35,14 +36,22 @@ def localize_device(xs, ys, rssis):
         peak2d = np.unravel_index(zgrid.argmax(), zgrid.shape)
     x_peak = round(peak2d[1] * 0.1, 1)
     y_peak = round(peak2d[0] * 0.1, 1)
-    print('x:', round(peak2d[1] * 0.1, 1), 'y:', round(peak2d[0] * 0.1, 1))
-
+    rssi_peak = np.amax(rssis)
+    print('peak:', '(', x_peak, ',', y_peak, ')', rssi_peak)
+    print(np.stack((xs, ys), axis=1))
+    print(rssis)
     # plot mesh grid
     fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-    print(xs, ys, rssis)
+    ax.plot_wireframe(xgrid, ygrid, zgrid, rstride=100, cstride=100)
     ax.scatter(xs, ys, rssis, marker='o', c='r')
     ax.scatter([x_peak], [y_peak], [np.amax(zgrid)], marker='X', c='black')
-    ax.plot_wireframe(xgrid, ygrid, zgrid)
+
+    # # label coordinates
+    # for i in range(len(xs)):
+    #     text='('+ str(xs[i]) + ',' + str(ys[i]) + ',' + str(rssis[i]) + ')'
+    #     ax.text(xs[i], ys[i], rssis[i], text)
+    ax.text(x_peak, y_peak, rssi_peak, '(' + str(x_peak) + ',' + str(y_peak) + ',' + str(rssi_peak) + ')')
+
     plt.show()
 
 # input is three filepaths: 
@@ -74,7 +83,7 @@ for rssi_ind in range(len(rssi_data)):
                 device_info[uuid].append((x, y, rssi))
             else:
                 device_info[uuid] = [(x, y, rssi)]
-            continue
+            break
 
 # test
 test_res = np.array(device_info['0000feed-0000-1000-8000-00805f9b34fb'])
@@ -83,3 +92,8 @@ xs = test_res[:,0]
 ys = test_res[:,1]
 rssis = test_res[:,2]
 localize_device(xs, ys, rssis)
+
+# pos_data = pd.read_csv('positions.csv', header=None, names=['timestamp', 'x', 'y'], skipinitialspace=True)
+# for pos_ind in range(len(pos_data)):
+#     pos_data['timestamp'][pos_ind] += 1651288197.1011
+# pos_data.to_csv('positions-copy.csv', header=False, index=False)

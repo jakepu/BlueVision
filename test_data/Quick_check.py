@@ -1,6 +1,6 @@
 import sys
 #Finds all the data in the file an writes it to a csv
-with open('uuid_scan.txt') as ff:
+with open('output.txt') as ff:
     lines = ff.readlines()
 
 all = ''
@@ -20,5 +20,5 @@ for line in lines:
             info = ''
     
 
-with open('uuid_parsed.csv', 'w') as aa:
+with open('output.csv', 'w') as aa:
     aa.write(all)
