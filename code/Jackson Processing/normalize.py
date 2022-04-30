@@ -10,7 +10,6 @@ for line in lins:
     if line != '':
         sensor_read_line = line.strip('\n').strip(',').split(',')
         sensor_readings += [sensor_read_line]
-print(sensor_readings)
 
 time_nums = []
 acc_x_list = []
