@@ -37,9 +37,8 @@ try:
                     else:
                         param.append(data)
                         tcpdata.append(data)
-                        print(type(data.decode()))
 except KeyboardInterrupt:
-    with open('./data.json', 'w') as f:
+    with open('./data.csv', 'w') as f:
         for imudata in tcpdata:
             f.write(imudata.decode())
     print("Connection closed by remote end")

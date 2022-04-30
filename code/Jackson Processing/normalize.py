@@ -9,12 +9,14 @@ for line in lins:
     if line != '':
         the = line.strip('\n').strip(',').split(',')
         #print(the)
-        the_list += [the[:-1]]
+        the_list += [the]
         time_nums.append(float(the[0]) / 1000)
 
 areax=[]
 areay=[]
 areaz=[]
+
+print(the_list)
 
 for p in range(len(the_list)):
     numx = float(the_list[p][1])
