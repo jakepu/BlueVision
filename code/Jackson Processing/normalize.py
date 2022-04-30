@@ -1,65 +1,53 @@
 
 import scipy.integrate
 
+lins = []
 with open('./data.csv','r') as the_in:
     lins = the_in.readlines()
-time_nums = []
-the_list = []
+
+sensor_readings = []
 for line in lins:
     if line != '':
-        the = line.strip('\n').strip(',').split(',')
-        #print(the)
-        the_list += [the]
-        time_nums.append(float(the[0]) / 1000)
+        sensor_read_line = line.strip('\n').strip(',').split(',')
+        sensor_readings += [sensor_read_line]
+print(sensor_readings)
 
-areax=[]
-areay=[]
-areaz=[]
+time_nums = []
+acc_x_list = []
+acc_y_list = []
+acc_z_list = []
 
-print(the_list)
+for p in range(len(sensor_readings)):
+    time_val = int(sensor_readings[p][0]) / 1000
+    numx = float(sensor_readings[p][1])
+    numy = float(sensor_readings[p][2])
+    numz = float(sensor_readings[p][3])
+    time_nums.append(time_val)
+    acc_x_list.append(numx)
+    acc_y_list.append(numy)
+    acc_z_list.append(numz)
 
-for p in range(len(the_list)):
-    numx = float(the_list[p][1])
-    numy = float(the_list[p][2])
-    numz = float(the_list[p][3])
-    areax.append(numx)
-    areay.append(numy)
-    areaz.append(numz)
-    
-set_dx = time_nums
-print(len(areaz))
-range_check = 0
 
-areax_list = scipy.integrate.cumulative_trapezoid(areax, x=set_dx)
-print("vel_x:", areax_list[-10:])
-# for a in range(range_check,len(areax_list)):
-#     vel = areax_list[a]
-#     err = True
-#     for k in range(range_check):
-#         if abs(vel - areax_list[a-k]) != 0:
-#             err = False
-#     if err == True:
-#         for k in range(range_check):
-#             areax_list[a-k] = 0
-print('dist_x:', scipy.integrate.cumulative_trapezoid(areax_list,x=set_dx[:-1])[-10:])
-print('disp_x:', scipy.integrate.trapezoid(areax_list,x=set_dx[:-1]))
+vel_x_list = scipy.integrate.cumulative_trapezoid(y=acc_x_list, x=time_nums)
+dist_x_list = scipy.integrate.cumulative_trapezoid(y=vel_x_list,x=time_nums[:-1])
+dist_x = scipy.integrate.trapezoid(y=vel_x_list,x=time_nums[:-1])
+print('acc x list:', acc_x_list[-10:])
+print("vel x list:", vel_x_list[-10:])
+print('dist x list:', dist_x_list[-10:])
+print('dist x val:', dist_x)
 
-areay_list = scipy.integrate.cumulative_trapezoid(areay, x=set_dx)
-print("vel_y':", areay_list[-10:])
-# for a in range(range_check,len(areay_list)):
-#     vel = areay_list[a]
-#     err = True
-#     for k in range(range_check):
-#         if abs(vel - areay_list[a-k]) != 0:
-#             err = False
-#     if err == True:
-#         for k in range(range_check):
-#             areay_list[a-k] = 0
-        
-print('dist_y', scipy.integrate.cumulative_trapezoid(areay_list,x=set_dx[:-1])[-10:])
-print('disp_y:', scipy.integrate.trapezoid(areay_list,x=set_dx[:-1]))
+vel_y_list = scipy.integrate.cumulative_trapezoid(y=acc_y_list, x=time_nums)
+dist_y_list = scipy.integrate.cumulative_trapezoid(y=vel_y_list,x=time_nums[:-1])
+dist_y = scipy.integrate.trapezoid(y=vel_y_list,x=time_nums[:-1])
+print('acc_y list:', acc_y_list[-10:])
+print("vel y list':", vel_y_list[-10:])
+print('dist y list:', dist_y_list)
+print('dist y val:', dist_y)
 
-#areaz_list = scipy.integrate.cumulative_trapezoid(areaz, x=set_dx)
-#print(scipy.integrate.cumulative_trapezoid(areaz_list,dx=set_dx))
-#print(scipy.integrate.trapezoid(areaz_list,x=set_dx[:-1]))
-
+vel_z_list = scipy.integrate.cumulative_trapezoid(y=acc_z_list, x=time_nums)
+dist_z_list = scipy.integrate.cumulative_trapezoid(y=vel_z_list,x=time_nums[:-1])
+dist_z = scipy.integrate.trapezoid(y=vel_z_list,x=time_nums[:-1])
+print('acc_y list:', acc_z_list[-10:])
+print("vel y list':", vel_z_list[-10:])
+print('dist y list:', dist_z_list)
+print('dist y val:', dist_z)
