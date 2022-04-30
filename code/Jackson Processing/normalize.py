@@ -17,7 +17,7 @@ acc_y_list = []
 acc_z_list = []
 
 for p in range(len(sensor_readings)):
-    time_val = int(sensor_readings[p][0]) / 1000
+    time_val = int(sensor_readings[p][0]) / 1000  # convert to seconds
     numx = float(sensor_readings[p][1])
     numy = float(sensor_readings[p][2])
     numz = float(sensor_readings[p][3])
@@ -34,6 +34,8 @@ print('acc x list:', acc_x_list[-10:])
 print("vel x list:", vel_x_list[-10:])
 print('dist x list:', dist_x_list[-10:])
 print('dist x val:', dist_x)
+
+print('------')
 
 vel_y_list = scipy.integrate.cumulative_trapezoid(y=acc_y_list, x=time_nums)
 dist_y_list = scipy.integrate.cumulative_trapezoid(y=vel_y_list,x=time_nums[:-1])
